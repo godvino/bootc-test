@@ -28,6 +28,7 @@ jobs:
         with:
           image: ${{ env.IMAGE_NAME }}
           tags: latest ${{ github.sha }}
+          oci: true
           containerfiles: |
             ./Containerfile
           extra-args: |
