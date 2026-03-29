@@ -24,22 +24,19 @@ jobs:
 
       - name: Build and Push Image with Rootful Podman
         run: |
-          # 1. Execute the rootful podman build to preserve security xattrs
-          sudo podman build \
+          podman build \
             -f ./Containerfile \
             -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest \
             -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} \
             --cap-add=SYS_ADMIN \
             .
           
-          # 2. Authenticate to the registry as root
-          sudo podman login ${{ env.REGISTRY }} \
+          podman login ${{ env.REGISTRY }} \
             -u ${{ github.actor }} \
             -p ${{ secrets.GITHUB_TOKEN }}
 
-          # 3. Push the complete layers directly from the root storage graph
-          sudo podman push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-          sudo podman push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+          podman push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          podman push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
 
       - name: Print image URL
         run: echo "Image pushed to ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}"
