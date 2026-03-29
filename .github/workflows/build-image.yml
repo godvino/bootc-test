@@ -26,6 +26,7 @@ jobs:
         id: build-image
         run: |
           # Execute the manual podman build
+          podman info --format '{{.Store.GraphDriverName}}'
           podman build \
             -f ./Containerfile \
             -t ${{ env.IMAGE_NAME }}:latest \
