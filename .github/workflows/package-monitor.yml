@@ -1,0 +1,64 @@
+name: Artifact Update Monitor
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+env:
+  IMAGE_NAME: bootc-test
+  REGISTRY: ghcr.io/${{ github.repository_owner }}
+
+jobs:
+  evaluate-artifact-delta:
+    name: Evaluate Global RPM Delta
+    runs-on: ubuntu-latest
+    
+    permissions:
+      actions: write
+      contents: read
+      packages: read
+
+    steps:
+      - name: Authenticate to Container Registry
+        run: |
+          sudo podman login ${{ env.REGISTRY }} \
+            --username ${{ github.actor }} \
+            --password ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Execute Cross-Environment DNF Evaluation
+        id: evaluate
+        shell: sudo bash {0}
+        env:
+          TARGET_IMAGE: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          TARGET_WORKFLOW: build-image.yml
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set +e
+          
+          podman pull $TARGET_IMAGE
+          
+          CTR=$(buildah from $TARGET_IMAGE)
+          MNT=$(buildah mount $CTR)
+          
+          podman run --rm -v $MNT:/target:ro quay.io/fedora/fedora:44 \
+            dnf --installroot=/target \
+            --setopt=reposdir=/etc/yum.repos.d \
+            check-update
+          
+          EXIT_CODE=$?
+          
+          buildah unmount $CTR
+          buildah rm $CTR
+          
+          set -e
+
+          if [ $EXIT_CODE -eq 100 ]; then
+            echo "Delta detected: Artifact RPM database is outdated compared to upstream repositories."
+            gh workflow run $TARGET_WORKFLOW -f reason="Global artifact packages outdated"
+          elif [ $EXIT_CODE -eq 0 ]; then
+            echo "Parity confirmed: Artifact packages match the current upstream repository state."
+          else
+            echo "DNF evaluation failed with fatal exit code $EXIT_CODE."
+            exit 1
+          fi

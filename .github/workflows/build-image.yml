@@ -4,6 +4,11 @@ on:
   push:
     branches: [ "main" ]
   workflow_dispatch:
+    inputs:
+      reason:
+        description: 'Trigger justification'
+        required: false
+        default: 'Manual execution'
 
 env:
   IMAGE_NAME: bootc-test
@@ -23,20 +28,21 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Build and Push Image
+        shell: sudo bash {0}
         run: |
-          sudo podman build \
+          podman build \
             -f ./Containerfile \
             -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest \
             -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} \
             --cap-add=SYS_ADMIN \
             .
           
-          sudo podman login ${{ env.REGISTRY }} \
+          podman login ${{ env.REGISTRY }} \
             -u ${{ github.actor }} \
             -p ${{ secrets.GITHUB_TOKEN }}
 
-          sudo podman push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-          sudo podman push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+          podman push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          podman push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
 
       - name: Print image URL
         run: echo "Image pushed to ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}"
