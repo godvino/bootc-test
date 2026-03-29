@@ -22,17 +22,20 @@ jobs:
       - name: Clone the repository
         uses: actions/checkout@v4
 
-      - name: Build Image with Buildah
+      - name: Build Image with Podman
         id: build-image
-        uses: redhat-actions/buildah-build@v2
-        with:
-          image: ${{ env.IMAGE_NAME }}
-          tags: latest ${{ github.sha }}
-          oci: true
-          containerfiles: |
-            ./Containerfile
-          extra-args: |
-            --cap-add=SYS_ADMIN
+        run: |
+          # Execute the manual podman build
+          podman build \
+            -f ./Containerfile \
+            -t ${{ env.IMAGE_NAME }}:latest \
+            -t ${{ env.IMAGE_NAME }}:${{ github.sha }} \
+            --cap-add=SYS_ADMIN \
+            .
+          
+          # Manually set the outputs expected by the push-to-registry action
+          echo "image=${{ env.IMAGE_NAME }}" >> "$GITHUB_OUTPUT"
+          echo "tags=latest ${{ github.sha }}" >> "$GITHUB_OUTPUT"
 
       - name: Log in to the GitHub Container Registry
         uses: redhat-actions/podman-login@v1
