@@ -1,57 +1,24 @@
-name: Build and Push OCI Image
-
-on:
-  push:
-    branches: [ "main" ]
-  workflow_dispatch:
-
-env:
-  IMAGE_NAME: bootc-test
-  REGISTRY: ghcr.io/${{ github.repository_owner }}
-
-jobs:
-  build-and-push:
-    name: Build and Push Image
-    runs-on: ubuntu-latest
-    
-    permissions:
-      contents: read
-      packages: write
-
-    steps:
+steps:
       - name: Clone the repository
         uses: actions/checkout@v4
 
-      - name: Build Image with Podman
-        id: build-image
+      - name: Build and Push Image with Rootful Podman
         run: |
-          # Execute the manual podman build
-          podman info --format '{{.Store.GraphDriverName}}'
-          podman build \
+          # 1. Execute the rootful podman build to preserve security xattrs
+          sudo podman build \
             -f ./Containerfile \
-            -t ${{ env.IMAGE_NAME }}:latest \
-            -t ${{ env.IMAGE_NAME }}:${{ github.sha }} \
+            -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest \
+            -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} \
             --cap-add=SYS_ADMIN \
             .
           
-          # Manually set the outputs expected by the push-to-registry action
-          echo "image=${{ env.IMAGE_NAME }}" >> "$GITHUB_OUTPUT"
-          echo "tags=latest ${{ github.sha }}" >> "$GITHUB_OUTPUT"
+          # 2. Authenticate to the registry as root
+          sudo podman login ${{ env.REGISTRY }} \
+            -u ${{ github.actor }} \
+            -p ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Log in to the GitHub Container Registry
-        uses: redhat-actions/podman-login@v1
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Push to GitHub Container Registry
-        id: push-to-ghcr
-        uses: redhat-actions/push-to-registry@v2
-        with:
-          image: ${{ steps.build-image.outputs.image }}
-          tags: ${{ steps.build-image.outputs.tags }}
-          registry: ${{ env.REGISTRY }}
+          sudo podman push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          sudo podman push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
 
       - name: Print image URL
-        run: echo "Image pushed to ${{ steps.push-to-ghcr.outputs.registry-paths }}"
+        run: echo "Image pushed to ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}"
