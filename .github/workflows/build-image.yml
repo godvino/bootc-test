@@ -1,4 +1,24 @@
-steps:
+name: Build and Push OCI Image
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+env:
+  IMAGE_NAME: bootc-test
+  REGISTRY: ghcr.io/${{ github.repository_owner }}
+
+jobs:
+  build-and-push:
+    name: Build and Push Image
+    runs-on: ubuntu-latest
+    
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
       - name: Clone the repository
         uses: actions/checkout@v4
 
@@ -17,6 +37,7 @@ steps:
             -u ${{ github.actor }} \
             -p ${{ secrets.GITHUB_TOKEN }}
 
+          # 3. Push the complete layers directly from the root storage graph
           sudo podman push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
           sudo podman push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
 
