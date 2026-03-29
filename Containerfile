@@ -10,7 +10,7 @@ RUN mkdir -p /rootfs/usr /rootfs/dev /rootfs/proc /rootfs/sys && \
         kernel ignition bootc systemd systemd-networkd \
         systemd-boot-unsigned podman sshd btrfs-progs \
         dosfstools selinux-policy-targeted curl \
-        cockpit-system cockpit-podman && \
+        cockpit-system cockpit-podman systemd-pam && \
     dnf --installroot=/rootfs remove -y curl ignition && \
     dnf --installroot=/rootfs clean all && \
     rm -rf /rootfs/run/* /rootfs/var/log/* /rootfs/var/cache/* \
