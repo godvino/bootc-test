@@ -14,29 +14,46 @@ jobs:
     name: Build and Push Image
     runs-on: ubuntu-latest
     
+    container:
+      image: quay.io/fedora/fedora:44
+      options: --privileged
+      
     permissions:
       contents: read
       packages: write
 
     steps:
+      - name: Install dependencies
+        run: dnf install -y buildah podman
+
       - name: Clone the repository
         uses: actions/checkout@v4
 
-      - name: Build and Push Image with Rootful Podman
-        run: |
-          sudo podman build \
-            -f ./Containerfile \
-            -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest \
-            -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} \
-            --cap-add=SYS_ADMIN \
-            .
-          
-          sudo podman login ${{ env.REGISTRY }} \
-            -u ${{ github.actor }} \
-            -p ${{ secrets.GITHUB_TOKEN }}
+      - name: Build Image with Buildah Action
+        id: build-image
+        uses: redhat-actions/buildah-build@v2
+        with:
+          image: ${{ env.IMAGE_NAME }}
+          tags: latest ${{ github.sha }}
+          containerfiles: |
+            ./Containerfile
+          extra-args: |
+            --cap-add=SYS_ADMIN
 
-          sudo podman push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-          sudo podman push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+      - name: Log in to the GitHub Container Registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Push to GitHub Container Registry
+        id: push-to-ghcr
+        uses: redhat-actions/push-to-registry@v2
+        with:
+          image: ${{ steps.build-image.outputs.image }}
+          tags: ${{ steps.build-image.outputs.tags }}
+          registry: ${{ env.REGISTRY }}
 
       - name: Print image URL
-        run: echo "Image pushed to ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}"
+        run: echo "Image pushed to ${{ steps.push-to-ghcr.outputs.registry-paths }}"
