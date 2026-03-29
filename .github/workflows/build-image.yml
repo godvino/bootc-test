@@ -24,19 +24,19 @@ jobs:
 
       - name: Build and Push Image with Rootful Podman
         run: |
-          podman build \
+          sudo podman build \
             -f ./Containerfile \
             -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest \
             -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} \
             --cap-add=SYS_ADMIN \
             .
           
-          podman login ${{ env.REGISTRY }} \
+          sudo podman login ${{ env.REGISTRY }} \
             -u ${{ github.actor }} \
             -p ${{ secrets.GITHUB_TOKEN }}
 
-          podman push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-          podman push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+          sudo podman push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          sudo podman push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
 
       - name: Print image URL
         run: echo "Image pushed to ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}"
