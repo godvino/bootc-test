@@ -9,7 +9,7 @@ RUN mkdir -p /rootfs/usr /rootfs/dev /rootfs/proc /rootfs/sys && \
         --setopt=install_weak_deps=False install -y \
         kernel ignition bootc systemd systemd-networkd \
         systemd-boot-unsigned podman sshd btrfs-progs \
-        dosfstools selinux-policy-targeted curl \
+        dosfstools selinux-policy-targeted curl sudo \
         cockpit-system cockpit-podman systemd-pam && \
     dnf --installroot=/rootfs remove -y curl ignition && \
     dnf --installroot=/rootfs clean all && \
