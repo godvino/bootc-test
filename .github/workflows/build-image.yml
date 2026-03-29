@@ -24,7 +24,7 @@ jobs:
 
     steps:
       - name: Install dependencies
-        run: dnf install -y buildah podman
+        run: dnf install --setopt=install_weak_deps=False -y buildah podman
 
       - name: Clone the repository
         uses: actions/checkout@v4
@@ -46,6 +46,7 @@ jobs:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+          auth_file_path: /run/containers/0/auth.json
 
       - name: Push to GitHub Container Registry
         id: push-to-ghcr
@@ -54,6 +55,8 @@ jobs:
           image: ${{ steps.build-image.outputs.image }}
           tags: ${{ steps.build-image.outputs.tags }}
           registry: ${{ env.REGISTRY }}
+          extra-args: |
+            --authfile=/run/containers/0/auth.json
 
       - name: Print image URL
         run: echo "Image pushed to ${{ steps.push-to-ghcr.outputs.registry-paths }}"
