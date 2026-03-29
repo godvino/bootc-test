@@ -24,12 +24,12 @@ jobs:
 
     steps:
       - name: Install dependencies
-        run: dnf install --setopt=install_weak_deps=False -y buildah podman
+        run: dnf install --setopt=install_weak_deps=False -y buildah podman fuse-overlayfs
 
       - name: Clone the repository
         uses: actions/checkout@v4
 
-      - name: Build Image with Buildah Action
+      - name: Build Image
         id: build-image
         uses: redhat-actions/buildah-build@v2
         with:
