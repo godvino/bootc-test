@@ -17,7 +17,7 @@ RUN mkdir -p /rootfs/usr /rootfs/dev /rootfs/proc /rootfs/sys && \
            /rootfs/var/lib/systemd/random-seed /rootfs/etc/machine-id \
            /rootfs/etc/dnf /rootfs/home /rootfs/etc/yum.repos.d && \
     mkdir -p /rootfs/sysroot /rootfs/var/home && \
-    ln -s /var/home /rootfs/home && \
+    ln -s var/home /rootfs/home && \
     mkdir -p /kernel-build && \
     kver=$(ls -1 /rootfs/usr/lib/modules | head -n 1) && \
     mv /rootfs/boot/initramfs-*.img /kernel-build/initramfs.img && \
