@@ -28,7 +28,7 @@ jobs:
 
       - name: Execute Cross-Environment DNF Evaluation
         id: evaluate
-        shell: sudo bash {0}
+        shell: sudo -E bash {0}
         env:
           TARGET_IMAGE: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
           TARGET_WORKFLOW: build-image.yml
@@ -55,7 +55,7 @@ jobs:
 
           if [ $EXIT_CODE -eq 100 ]; then
             echo "Delta detected: Artifact RPM database is outdated compared to upstream repositories."
-            gh workflow run $TARGET_WORKFLOW -f reason="Global artifact packages outdated"
+            gh workflow run $TARGET_WORKFLOW --repo ${{ github.repository }} -f reason="Global artifact packages outdated"
           elif [ $EXIT_CODE -eq 0 ]; then
             echo "Parity confirmed: Artifact packages match the current upstream repository state."
           else
