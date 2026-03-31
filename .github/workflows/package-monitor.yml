@@ -41,7 +41,7 @@ jobs:
           CTR=$(buildah from $TARGET_IMAGE)
           MNT=$(buildah mount $CTR)
           
-          podman run --rm -v $MNT:/target:ro quay.io/fedora/fedora:44 \
+          podman run --rm -v $MNT:/target quay.io/fedora/fedora:44 \
             dnf --installroot=/target \
             --setopt=reposdir=/etc/yum.repos.d \
             check-update
