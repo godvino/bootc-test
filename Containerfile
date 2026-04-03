@@ -16,9 +16,10 @@ RUN mkdir -p /rootfs/usr /rootfs/dev /rootfs/proc /rootfs/sys && \
     dnf --installroot=/rootfs clean all && \
     rm -rf /rootfs/run/* /rootfs/var/log/* /rootfs/var/cache/* \
            /rootfs/var/lib/systemd/random-seed /rootfs/etc/machine-id \
-           /rootfs/etc/dnf /rootfs/home /rootfs/etc/yum.repos.d && \
-    mkdir -p /rootfs/sysroot /rootfs/var/home && \
+           /rootfs/etc/dnf /rootfs/home /rootfs/root /rootfs/etc/yum.repos.d && \
+    mkdir -p /rootfs/sysroot /rootfs/var/home /rootfs/var/roothome && \
     ln -s var/home /rootfs/home && \
+    ln -s var/roothome /rootfs/root && \
     mkdir -p /kernel-build && \
     kver=$(ls -1 /rootfs/usr/lib/modules | head -n 1) && \
     mv /rootfs/boot/initramfs-*.img /kernel-build/initramfs.img && \
