@@ -1,4 +1,4 @@
-FROM quay.io/fedora/fedora-minimal:44 AS builder
+FROM quay.io/fedora/fedora-minimal:43 AS builder
 COPY /usr/ /rootfs/usr/
 RUN mkdir -p /rootfs/usr /rootfs/dev /rootfs/proc /rootfs/sys && \
     mount --bind /dev /rootfs/dev && \
