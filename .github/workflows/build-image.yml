@@ -41,8 +41,8 @@ jobs:
             -u ${{ github.actor }} \
             -p ${{ secrets.GITHUB_TOKEN }}
 
-          podman push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-          podman push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+          podman push --format=oci ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          podman push --format=oci ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
 
       - name: Print image URL
         run: echo "Image pushed to ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}"
