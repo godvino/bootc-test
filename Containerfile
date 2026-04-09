@@ -11,7 +11,7 @@ RUN mkdir -p /rootfs/usr /rootfs/dev /rootfs/proc /rootfs/sys && \
         systemd-boot-unsigned podman sshd btrfs-progs \
         dosfstools selinux-policy-targeted curl sudo \
         cockpit-system cockpit-podman systemd-pam \
-        bash-completion ncurses && \
+        bash-completion ncurses zram-generator-defaults && \
     dnf --installroot=/rootfs remove -y curl ignition && \
     dnf --installroot=/rootfs clean all && \
     rm -rf /rootfs/run/* /rootfs/var/log/* /rootfs/var/cache/* \
@@ -38,7 +38,7 @@ RUN --mount=type=tmpfs,target=/var/tmp \
       --linux=/kernel-build/vmlinuz \
       --initrd=/kernel-build/initramfs.img \
       --os-release=@/rootfs/usr/lib/os-release \
-      --cmdline="composefs=$DIGEST rw" \
+      --cmdline="composefs=$DIGEST rw systemd.debug-shell=1" \
       --output=/out/EFI/Linux/bootc.efi && \
     bootc container lint --no-truncate --skip baseimage-root --rootfs /target-rootfs
 
