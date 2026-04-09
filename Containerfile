@@ -11,7 +11,7 @@ RUN mkdir -p /rootfs/usr /rootfs/dev /rootfs/proc /rootfs/sys && \
         systemd-boot-unsigned podman sshd btrfs-progs \
         dosfstools selinux-policy-targeted curl sudo \
         cockpit-system cockpit-podman systemd-pam \
-        bash-completion ncurses zram-generator-defaults && \
+        bash-completion ncurses && \
     dnf --installroot=/rootfs remove -y curl ignition && \
     dnf --installroot=/rootfs clean all && \
     rm -rf /rootfs/run/* /rootfs/var/log/* /rootfs/var/cache/* \
