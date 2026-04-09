@@ -17,7 +17,7 @@ RUN mkdir -p /rootfs/usr /rootfs/dev /rootfs/proc /rootfs/sys && \
     rm -rf /rootfs/run/* /rootfs/var/log/* /rootfs/var/cache/* \
            /rootfs/var/lib/systemd/random-seed /rootfs/etc/machine-id \
            /rootfs/etc/dnf /rootfs/home /rootfs/root /rootfs/etc/yum.repos.d && \
-    mkdir -p /rootfs/sysroot /rootfs/var/home /rootfs/var/roothome && \
+    mkdir -p /rootfs/sysroot /rootfs/var/home /rootfs/var/roothome /rootfs/var/log/journal && \
     ln -s var/home /rootfs/home && \
     ln -s var/roothome /rootfs/root && \
     mkdir -p /kernel-build && \
@@ -38,7 +38,7 @@ RUN --mount=type=tmpfs,target=/var/tmp \
       --linux=/kernel-build/vmlinuz \
       --initrd=/kernel-build/initramfs.img \
       --os-release=@/rootfs/usr/lib/os-release \
-      --cmdline="composefs=$DIGEST rw systemd.debug-shell=1" \
+      --cmdline="composefs=$DIGEST rw systemd.debug-shell=1 systemd.log_level=debug systemd.log_target=console systemd.journald.forward_to_console=1" \
       --output=/out/EFI/Linux/bootc.efi && \
     bootc container lint --no-truncate --skip baseimage-root --rootfs /target-rootfs
 
