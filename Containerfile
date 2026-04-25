@@ -10,7 +10,7 @@ RUN mkdir -p /rootfs/usr /rootfs/dev /rootfs/proc /rootfs/sys && \
         kernel ignition bootc systemd systemd-networkd \
         systemd-boot-unsigned podman sshd btrfs-progs \
         dosfstools selinux-policy-targeted curl sudo \
-        cockpit-system cockpit-podman systemd-pam unbound \
+        cockpit cockpit-podman systemd-pam unbound \
         bash-completion ncurses zram-generator-defaults && \
     dnf --installroot=/rootfs remove -y curl ignition && \
     dnf --installroot=/rootfs clean all && \
