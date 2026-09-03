@@ -1,4 +1,4 @@
-FROM quay.io/fedora/fedora-minimal:44 AS builder
+FROM quay.io/fedora/fedora-minimal:45 AS builder
 COPY /usr/ /rootfs/usr/
 RUN mkdir -p /rootfs/usr /rootfs/dev /rootfs/proc /rootfs/sys && \
     mount --bind /dev /rootfs/dev && \
@@ -24,7 +24,8 @@ RUN mkdir -p /rootfs/usr /rootfs/dev /rootfs/proc /rootfs/sys && \
     kver=$(ls -1 /rootfs/usr/lib/modules | head -n 1) && \
     mv /rootfs/boot/initramfs-*.img /kernel-build/initramfs.img && \
     mv /rootfs/usr/lib/modules/$kver/vmlinuz /kernel-build/vmlinuz && \
-    rm -rf /rootfs/boot/*
+    rm -rf /rootfs/boot/* && \
+    echo "BTRFS_SUBVOLUME_SYSTEM=yes" >> /etc/default/useradd
 
 FROM scratch AS os-base
 COPY --from=builder /rootfs/ /
