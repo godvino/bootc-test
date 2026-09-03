@@ -15,7 +15,7 @@ RUN mkdir -p /rootfs/usr /rootfs/dev /rootfs/proc /rootfs/sys && \
     dnf --installroot=/rootfs remove -y curl ignition && \
     dnf --installroot=/rootfs clean all && \
     rm -rf /rootfs/run/* /rootfs/var/log/* /rootfs/var/cache/*  /rootfs/etc/unbound \
-           /rootfs/var/lib/systemd/random-seed /rootfs/etc/machine-id \
+           /rootfs/var/lib/systemd/random-seed /rootfs/etc/machine-id /rootfs/etc/firewalld \
            /rootfs/etc/dnf /rootfs/home /rootfs/root /rootfs/etc/yum.repos.d && \
     mkdir -p /rootfs/sysroot /rootfs/var/home /rootfs/var/roothome /rootfs/var/log/journal && \
     ln -s var/home /rootfs/home && \
