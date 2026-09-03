@@ -40,7 +40,7 @@ RUN --mount=type=tmpfs,target=/var/tmp \
       --linux=/kernel-build/vmlinuz \
       --initrd=/kernel-build/initramfs.img \
       --os-release=@/rootfs/usr/lib/os-release \
-      --cmdline="composefs=$DIGEST rw" \
+      --cmdline="composefs=$DIGEST rw rootflags=noatime" \
       --output=/out/EFI/Linux/bootc.efi && \
     bootc container lint --no-truncate --skip baseimage-root --rootfs /target-rootfs
 
