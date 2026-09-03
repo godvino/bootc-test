@@ -25,7 +25,8 @@ RUN mkdir -p /rootfs/usr /rootfs/dev /rootfs/proc /rootfs/sys && \
     mv /rootfs/boot/initramfs-*.img /kernel-build/initramfs.img && \
     mv /rootfs/usr/lib/modules/$kver/vmlinuz /kernel-build/vmlinuz && \
     rm -rf /rootfs/boot/* && \
-    echo "BTRFS_SUBVOLUME_SYSTEM=yes" >> /etc/default/useradd
+    echo "BTRFS_SUBVOLUME_SYSTEM=yes" >> /rootfs/etc/default/useradd && \
+    sed -i 's|^HOME=/home|HOME=/var/home|' /rootfs/etc/default/useradd
 
 FROM scratch AS os-base
 COPY --from=builder /rootfs/ /
