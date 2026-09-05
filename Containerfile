@@ -9,7 +9,7 @@ RUN mkdir -p /rootfs/usr /rootfs/dev /rootfs/proc /rootfs/sys && \
         --setopt=install_weak_deps=False install -y \
         kernel ignition bootc systemd systemd-networkd \
         systemd-boot-unsigned podman sshd btrfs-progs udisks2-btrfs \
-        dosfstools selinux-policy-targeted curl sudo firewalld \
+        dosfstools selinux-policy-targeted curl sudo firewalld btrbk \
         cockpit cockpit-podman cockpit-files cockpit-storaged systemd-pam unbound \
         bash-completion ncurses zram-generator-defaults qemu-guest-agent && \
     dnf --installroot=/rootfs remove -y curl ignition && \
