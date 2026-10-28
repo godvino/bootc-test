@@ -7,7 +7,7 @@ RUN mkdir -p /rootfs/usr /rootfs/dev /rootfs/proc /rootfs/sys && \
     dnf --setopt=install_weak_deps=False install -y bootc systemd-ukify && \
     dnf --installroot=/rootfs --use-host-config \
         --setopt=install_weak_deps=False install -y \
-        kernel ignition bootc systemd systemd-networkd \
+        kernel ignition bootc systemd systemd-networkd less \
         systemd-boot-unsigned podman sshd btrfs-progs udisks2-btrfs \
         dosfstools selinux-policy-targeted curl sudo firewalld rsync \
         cockpit cockpit-podman cockpit-files cockpit-storaged systemd-pam unbound \
